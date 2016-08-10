@@ -1,5 +1,5 @@
-Modbus Library for Arduino
-==========================
+Modbus Slave Library for Arduino and Ti MSP
+============================================
 
 This library allows your Arduino to communicate via Modbus protocol. The Modbus is a master-slave protocol
 used in industrial automation and can be used in other areas, such as home automation.
@@ -7,12 +7,15 @@ used in industrial automation and can be used in other areas, such as home autom
 The Modbus generally uses serial RS-232 or RS-485 as physical layer (then called Modbus Serial) and
 TCP/IP via Ethernet or WiFi (Modbus IP).
 
-In the current version the library allows the Arduino operate as a slave, supporting Modbus Serial and
+I also added the possibility to use Modbus over LoRa.
+http://www.microchip.com/design-centers/wireless-connectivity/embedded-wireless/lora-technology
+
+In the current version the library allows the Arduino operate as a slave, supporting Modbus Serial, Modbus LoRa and
 Modbus over IP. For more information about Modbus see:
 
-https://en.wikipedia.org/wiki/Modbus
-http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf
-http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf
+https://en.wikipedia.org/wiki/Modbus <br>
+http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf <br>
+http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf <br>
 
 I appreciate the work of all the authors of the other libraries, of which I used several ideas to compose the modbus-arduino.
 At the end of this document is a list of libraries and their authors.
@@ -92,11 +95,9 @@ There are five classes corresponding to five headers that may be used:
 <li>Modbus - Base Library</li>
 <li>ModbusSerial - Modbus Serial Library (RS-232 and RS-485)</li>
 <li>ModbusIP - Modbus IP Library (standard Ethernet Shield) </li>
-<li>ModbusIP_ENC28J60 - Modbus IP Library (for ENC28J60 chip)</li>
-<li>ModbusIP_ESP8266AT - Modbus IP Library (for ESP8266 chip with AT firmware) </li>
+<li>ModbusLoRa - Modbus LoRa Library (LoRa RN-2483) </li>
 </ul>
-<h4>If you want to use Modbus in ESP8266 without the Arduino, I have news:
-http://www.github.com/andresarmento/modbus-esp8266</h4>
+
 By opting for Modbus Serial or Modbus IP you must include in your sketch the corresponding header and the base library header, eg:
 
 ```
