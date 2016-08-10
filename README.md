@@ -10,7 +10,8 @@ TCP/IP via Ethernet or WiFi (Modbus IP).
 In the current version the library allows the Arduino operate as a slave, supporting Modbus Serial and
 Modbus over IP. For more information about Modbus see:
 
-http://pt.wikipedia.org/wiki/Modbus http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf
+http://pt.wikipedia.org/wiki/Modbus
+http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf
 http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf
 
 <b>Author's note (motivation and thanks):</b>
@@ -504,4 +505,3 @@ prof (at) andresarmento (dot) com
 License
 =======
 The code in this repo is licensed under the BSD New License. See LICENSE.txt for more info.
-
