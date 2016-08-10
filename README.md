@@ -10,17 +10,9 @@ TCP/IP via Ethernet or WiFi (Modbus IP).
 In the current version the library allows the Arduino operate as a slave, supporting Modbus Serial and
 Modbus over IP. For more information about Modbus see:
 
-http://pt.wikipedia.org/wiki/Modbus
+https://en.wikipedia.org/wiki/Modbus
 http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf
 http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf
-
-<b>Author's note (motivation and thanks):</b>
-
-It all started when I found the Modbus RTU Arduino library of Juan Pablo Zometa. I had extend the
-library to support other Modbus functions.
-
-After researching several other Modbus libraries I realized strengths and weaknesses in all of them.
-I also thought it would be cool have a base library for Modbus and derive it for each type of physical layer used.
 
 I appreciate the work of all the authors of the other libraries, of which I used several ideas to compose the modbus-arduino.
 At the end of this document is a list of libraries and their authors.
@@ -290,183 +282,13 @@ mb.Ists (SWITCH_ISTS, digitalRead (switchPin));
 Finally the value of SWITCH_ISTS register changes as the state of the selected digital input.
 
 
-<h3> Modbus IP(ENC28J60) </h3>
+Forked from
+=============
+<b>Modbus Library for Arduino</b><br>
+Author: André Sarmento Barbosa<br>
+Year: 2015<br>
+Website: http://github.com/andresarmento/modbus-arduino
 
-The Arduino standard Ethernet shield is based on chip WIZnet W5100, therefore the IDE comes
-with this library installed. If you have a shield based on ENC28J60 from Microchip you must install
-another Ethernet library. Among several available we chose EtherCard.
-
-Download the EtherCard in https://github.com/jcw/ethercard and install it in your IDE.
-Use the following includes in your sketches:
-
-```
-#include <EtherCard.h>
-#include <ModbusIP_ENC28J60.h>
-#include <Modbus.h>
-```
-Done! The use of Modbus functions is identical to the ModbusIP library described above.
-
-<b> Notes: </b>
-
-1. EtherCard is configured to use the pins 10, 11, 12 and 13.
-2. The voltage for shields based on ENC28J60 is generally 3.3V.
-
-3. Another alternative is to use the ENC28J60 UIPEthernet library, available from
-https://github.com/ntruchsess/arduino_uip. This library was made so that
-mimics the same standard Ethernet library functions, whose work is done by
-Wiznet W5100 chip. As the ENC28J60 not have all the features of the other chip, the library
-UIPEthernet uses a lot of memory, as it has to do in software what in the shield Wiznet
-is made in hardware. If for some reason you need to use this library, just change
-the file ModbusIP.h and your sketches, changing the lines:
-
-```
-#include <Ethernet.h>
-```
-
-by
-
-```
-#include <UIPEthernet.h>
-```
-
-Then, you can use the ModbusIP library (not the ModbusIP_ENC28J60).
-In fact it allows any library or skecth, made for
-Wiznet shield be used in shield ENC28J60. The big problem with this approach
-(and why we chose EtherCard) is that UIPEthernet library + ModbusIP uses about 60%
-arduino program memory, whereas with Ethercard + ModbusIP_ENC28J60
-this value drops to 30%!
-
-<h3>Modbus IP (ESP8266 AT)</h3>
-
-Modules based on ESP8266 are quite successful and cheap. With firmware that
-responds to AT commands (standard on many modules) you can use them as a
-simple wireless network interface to the Arduino.
-
-The firmware used in the module (at_v0.20_on_SDKv0.9.3) is available at:
-http://www.electrodragon.com/w/ESP8266_AT-command_firmware
-
-(Other AT firmwares compatible with ITEAD WeeESP8266 Library should work)
-
-Warning: Firmware such as NodeMCU and MicroPython does not work because libraries
-used here depend on a firmware that responds to AT commands via serial interface.
-The firmware mentioned are used when you want to use ESP8266 modules without the Arduino.
-
-You will need the WeeESP8266 library (ITEAD) for the Arduino. Download from:
-
-https://github.com/itead/ITEADLIB_Arduino_WeeESP8266 and install in your IDE.
-
-<b>Notes:</b>
-
-1. The ESP8266 library can be used with a serial interface by hardware (HardwareSerial) or
-by software (SoftwareSerial). By default it will use HardwareSerial, to change edit the file
-ESP8266.h removing the comments from line:
-
-```
-#define ESP8266_USE_SOFTWARE_SERIAL
-```
-
-2. Remember that the power of ESP8266 module is 3.3V.
-
-
-For Modbus IP (ESP8266 AT) there is four examples that can be accessed from the Arduino interface.
-Let's look at the example Lamp.ino (only the parts concerning Modbus will be commented):
-
-
-```
-#include <ESP8266.h>
-#include <SoftwareSerial.h>   //Apenas se utilizar Softwareserial para se comunicar com o módulo
-#include <Modbus.h>
-#include <ModbusIP_ESP8266AT.h>
-```
-Inclusion of the necessary libraries.
-
-
-```
-SoftwareSerial wifiSerial(2 , 3);
-```
-Creates the serial interface via software using pins 2 (RX) and 3 (TX). So it can use
-hardware for the serial communication with the PC (e.g. for debugging purposes) in Arduino models that have only one serial (Ex .: Arduino UNO).
-
-
-```
-ESP8266 wifi(wifiSerial, 9600);
-```
-Create the wifi object (ESP8266) specifying the rate in bps.
-Warning: If you use SoftwareSerial do not specify a baud rate of 115200bps or more for the serial because it will not function. Some firmware / modules comes with 115200bps by default. You will have to change the module via AT command:
-```
-AT+CIOBAUD=9600
-```
-
-Continuing with our example:
-```
-const int LAMP1_COIL = 100;
-```
-Sets the Modbus register to represent a lamp or LED. This value is the offset (0-based) to be placed in its supervisory or testing software.
-Note that if your software uses offsets 1-based the set value there should be 101, for this example.
-
-
-```
-ModbusIP mb;
-```
-Create the mb instance (ModbusSerial) to be used.
-
-
-```
-mb.config(wifi, "your_ssid", "your_password");
-```
-Configure ESP8266 module. The values quoted correspond to the network name (SSID) and security key.
-By default IP configuration is received via DHCP. See the end of the section how to have an Static IP
-(important so you do not need to change the master / supervisor if the IP changes).
-
-
-Folowing, we have:
-```
-mb.addCoil (LAMP1_COIL);
-```
-Adds the register type Coil (digital output) that will be responsible for activating the LED or lamp and verify their status.
-The library allows you to set an initial value for the register:
-
-```
-mb.addCoil (LAMP1_COIL, true);
-```
-In this case the register is added and set to true. If you use the first form the default value is false.
-
-
-```
-mb.task();
-```
-This method makes all magic, answering requests and changing the registers if necessary, it should be called only once, early in the loop.
-
-
-```
-digitalWrite(ledPin, mb.Coil(LAMP1_COIL));
-```
-Finally the value of LAMP1_COIL register is used to drive the lamp or LED.
-
-Quite similarly to other examples show the use of other methods available in the library.
-
-
-<b>Using a static IP on the ESP8266 module</b>
-
-We are aware today of two options:
-
-1) In your router configure the MAC address of the module so that the IP address provided by
-DHCP is always the same (Most routers have this feature).
-
-2) In your code, include two lines to change the IP address after the module configuration:
-
-```
-mb.config(wifi, "your_ssid", "your_password");
-delay(1000);
-wifiSerial.println("AT+CIPSTA=\"192.168.1.44\"");
-```
-
-Note .: For the module to  receive IP via DHCP again you will need to remove the lines
-and run (at least once) the command: AT + CWDHCP = 1.1 via direct connection to the module, either:
-
-```
-wifiSerial.println("AT+CWDHCP=1,1");
-```
 
 Other Modbus libraries
 ======================
@@ -496,11 +318,6 @@ Year: 2012<br>
 Website: https://github.com/4-20ma/ModbusMaster<br>
 Website: http://playground.arduino.cc/Code/ModbusMaster
 
-
-Contributions
-=============
-http://github.com/andresarmento/modbus-arduino<br>
-prof (at) andresarmento (dot) com
 
 License
 =======
