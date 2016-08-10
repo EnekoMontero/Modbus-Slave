@@ -7,7 +7,7 @@ used in industrial automation and can be used in other areas, such as home autom
 The Modbus generally uses serial RS-232 or RS-485 as physical layer (then called Modbus Serial) and
 TCP/IP via Ethernet or WiFi (Modbus IP).
 
-I also added the possibility to use Modbus over LoRa.
+I also added the possibility to use Modbus over LoRa. <br>
 http://www.microchip.com/design-centers/wireless-connectivity/embedded-wireless/lora-technology
 
 In the current version the library allows the Arduino operate as a slave, supporting Modbus Serial, Modbus LoRa and
