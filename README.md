@@ -86,6 +86,20 @@ SoftwareSerial myserial(2,3);
 mb.config(&myserial, 38400);   // mb.config(mb.config(&myserial, 38400, 4) for RS-485
 ```
 
+5) It is necessary to change the HardwareSerial buffer size in the Energia IDE from 16 to 64 bytes or it won't be able to store a whole message.
+
+In
+/Applications/Energia.app/Contents/Resources/Java/hardware/msp430/cores/msp430/HardwareSerial.cpp
+
+Change this line
+```
+#define SERIAL_BUFFER_SIZE 16
+```
+To
+```
+#define SERIAL_BUFFER_SIZE 64
+```
+
 How to
 ======
 
