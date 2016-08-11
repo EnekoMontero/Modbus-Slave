@@ -1,7 +1,8 @@
 /*
 ModbusLoRa.cpp - Source for Modbus Serial Library
-Copyright (C) 2014 André Sarmento Barbosa
+Copyright (C) 2016 UNPARALLEL INOVATION
 */
+
 #include "ModbusLoRa.h"
 
 ModbusLoRa::ModbusLoRa() {

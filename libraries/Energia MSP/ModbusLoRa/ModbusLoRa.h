@@ -1,7 +1,8 @@
 /*
     ModbusLoRa.h - Header for ModbusLoRa Library
-    Copyright (C) 2014 Andr� Sarmento Barbosa
+    Copyright (C) 2016 UNPARALLEL INOVATION
 */
+
 #include <Arduino.h>
 #include <Modbus.h>
 
