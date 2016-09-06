@@ -16,6 +16,11 @@
 #include <Modbus.h>
 #include <ModbusSerial.h>
 
+#include <avr/pgmspace.h>
+#include "q3.h"
+#include "cl1.h"
+#include "cond1.h"
+
 #define PRINTREGISTERS
 
 // ModBus Port information
@@ -27,7 +32,7 @@
 #define NUM_DISCRETE_INPUT 3
 #define NUM_INPUT_REGISTERS 3
 #define NUM_COILS 3
-#define NUM_HOLDING_REGISTERS 10
+#define NUM_HOLDING_REGISTERS 5
 
 #define PRINTINTERVAL 2000   //in miliseconds
 
@@ -115,7 +120,15 @@ void loop() {
 
     // Write to Analog Output - Holding Register - Master Read-Write
     modbus.Hreg(0, value);
-    modbus.Hreg(9, 99);
+    modbus.Hreg(4, 99);
+
+    float value_q3 = pgm_read_float_near(q3 + idx);
+    float value_cl1 = pgm_read_float_near(cl1 + idx);
+    float value_cond1 = pgm_read_float_near(cond1 + idx);
+
+    modbus.Hreg(0x55,value_q3*10);
+    modbus.Hreg(0x57,value_cl1*1000);
+    modbus.Hreg(0x59, value_cond1*100);
 
     ++idx;
     if( idx == 1124)
@@ -172,10 +185,22 @@ void loop() {
       Serial.println(modbus.Hreg(i));
     }
 
+    Serial.print("H-Reg ");
+    Serial.print(0x55);
+    Serial.print(" : ");
+    Serial.println(modbus.Hreg(0x55));
+    Serial.print("H-Reg ");
+    Serial.print(0x57);
+    Serial.print(" : ");
+    Serial.println(modbus.Hreg(0x57));
+    Serial.print("H-Reg ");
+    Serial.print(0x59);
+    Serial.print(" : ");
+    Serial.println(modbus.Hreg(0x59));
+
     Serial.println("------------------------ ");
 
     delay(5);
   }
 #endif
 }
-
