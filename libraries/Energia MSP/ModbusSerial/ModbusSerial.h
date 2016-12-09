@@ -21,7 +21,6 @@ class ModbusSerial : public Modbus {
         Stream* _port;
         HardwareSerial* DebugPort;
         long  _baud;
-        u_int _format;
         int   _txPin;
         unsigned int _t15; // inter character time out
         unsigned int _t35; // frame delay
@@ -47,7 +46,7 @@ class ModbusSerial : public Modbus {
         #endif
 
         #ifdef __AVR_ATmega32U4__
-        bool config(Serial_* port, long baud, u_int format, int txPin=-1);
+        bool config(Serial_* port, long baud, int txPin=-1);
         #endif
 };
 

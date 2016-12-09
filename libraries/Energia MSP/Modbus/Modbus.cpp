@@ -1,6 +1,6 @@
 /*
     Modbus.cpp - Source for Modbus Base Library
-    Copyright (C) 2014 Andrï¿½ Sarmento Barbosa
+    Copyright (C) 2014 André Sarmento Barbosa
 */
 #include "Modbus.h"
 
@@ -136,11 +136,7 @@ void Modbus::receivePDU(byte* frame) {
 
         case MB_FC_WRITE_REGS:
             //field1 = startreg, field2 = status
-            byte data[frame[5]];
-            for (int i = 0; i < frame[5]; i++) {
-              data[i] = frame[6 + i];
-            }
-            this->writeMultipleRegisters(frame,field1, field2, frame[5], data);
+            this->writeMultipleRegisters(frame,field1, field2, frame[5]);
         break;
 
         #ifndef USE_HOLDING_REGISTERS_ONLY
@@ -166,11 +162,7 @@ void Modbus::receivePDU(byte* frame) {
 
         case MB_FC_WRITE_COILS:
             //field1 = startreg, field2 = numoutputs
-            byte data2[frame[5]];
-            for (int i = 0; i < frame[5]; i++) {
-              data2[i] = frame[6 + i];
-            }
-            this->writeMultipleCoils(frame,field1, field2, frame[5], data2);
+            this->writeMultipleCoils(frame,field1, field2, frame[5]);
         break;
 
         #endif
@@ -254,7 +246,7 @@ void Modbus::writeSingleRegister(word reg, word value) {
     _reply = MB_REPLY_ECHO;
 }
 
-void Modbus::writeMultipleRegisters(byte* frame,word startreg, word numoutputs, byte bytecount, byte* data) {
+void Modbus::writeMultipleRegisters(byte* frame,word startreg, word numoutputs, byte bytecount) {
     //Check value
     if (numoutputs < 0x0001 || numoutputs > 0x007B || bytecount != 2 * numoutputs) {
         this->exceptionResponse(MB_FC_WRITE_REGS, MB_EX_ILLEGAL_VALUE);
@@ -287,14 +279,13 @@ void Modbus::writeMultipleRegisters(byte* frame,word startreg, word numoutputs, 
     word val;
     word i = 0;
 	while(numoutputs--) {
-        val = (word)data[i*2] << 8 | (word)data[1+i*2];
+        val = (word)frame[6+i*2] << 8 | (word)frame[7+i*2];
         this->Hreg(startreg + i, val);
         i++;
 	}
 
     _reply = MB_REPLY_NORMAL;
 }
-
 
 #ifndef USE_HOLDING_REGISTERS_ONLY
 void Modbus::readCoils(word startreg, word numregs) {
@@ -470,7 +461,7 @@ void Modbus::writeSingleCoil(word reg, word status) {
     _reply = MB_REPLY_ECHO;
 }
 
-void Modbus::writeMultipleCoils(byte* frame,word startreg, word numoutputs, byte bytecount, byte* data) {
+void Modbus::writeMultipleCoils(byte* frame,word startreg, word numoutputs, byte bytecount) {
     //Check value
     word bytecount_calc = numoutputs / 8;
     if (numoutputs%8) bytecount_calc++;
@@ -507,7 +498,7 @@ void Modbus::writeMultipleCoils(byte* frame,word startreg, word numoutputs, byte
     word i;
 	while (numoutputs--) {
         i = (totoutputs - numoutputs) / 8;
-        this->Coil(startreg, bitRead(data[i], bitn));
+        this->Coil(startreg, bitRead(frame[6+i], bitn));
         //increment the bit index
         bitn++;
         if (bitn == 8) bitn = 0;
@@ -518,3 +509,6 @@ void Modbus::writeMultipleCoils(byte* frame,word startreg, word numoutputs, byte
     _reply = MB_REPLY_NORMAL;
 }
 #endif
+
+
+

@@ -1,6 +1,6 @@
 /*
     Modbus.h - Header for Modbus Base Library
-    Copyright (C) 2014 Andrï¿½ Sarmento Barbosa
+    Copyright (C) 2014 André Sarmento Barbosa
 */
 #include "Arduino.h"
 
@@ -51,18 +51,16 @@ class Modbus {
         TRegister *_regs_head;
         TRegister *_regs_last;
 
-
-
         void readRegisters(word startreg, word numregs);
         void writeSingleRegister(word reg, word value);
-        void writeMultipleRegisters(byte* frame,word startreg, word numoutputs, byte bytecount, byte* data);
+        void writeMultipleRegisters(byte* frame,word startreg, word numoutputs, byte bytecount);
         void exceptionResponse(byte fcode, byte excode);
         #ifndef USE_HOLDING_REGISTERS_ONLY
             void readCoils(word startreg, word numregs);
             void readInputStatus(word startreg, word numregs);
             void readInputRegisters(word startreg, word numregs);
             void writeSingleCoil(word reg, word status);
-            void writeMultipleCoils(byte* frame,word startreg, word numoutputs, byte bytecount, byte* data);
+            void writeMultipleCoils(byte* frame,word startreg, word numoutputs, byte bytecount);
         #endif
 
         TRegister* searchRegister(word addr);
@@ -78,10 +76,7 @@ class Modbus {
         void receivePDU(byte* frame);
 
     public:
-        HardwareSerial* DebugPort;
-
         Modbus();
-        void modbusSerial(HardwareSerial* SerialDebugPort);
 
         void addHreg(word offset, word value = 0);
         bool Hreg(word offset, word value);

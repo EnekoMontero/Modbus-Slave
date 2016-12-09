@@ -18,10 +18,10 @@ byte ModbusSerial::getSlaveId() {
 }
 
 #ifndef DEBUG_MODE
-bool ModbusSerial::config(HardwareSerial* port, long baud, u_int format, int txPin) {
+bool ModbusSerial::config(HardwareSerial* port, long baud, int txPin) {
   this->_port = port;
   this->_txPin = txPin;
-  (*port).begin(baud, format);
+  (*port).begin(baud);
 
   if (txPin >= 0) {
     pinMode(txPin, OUTPUT);
@@ -59,10 +59,10 @@ bool ModbusSerial::config(HardwareSerial* port, long baud, u_int format, int txP
 
 #ifdef DEBUG_MODE
 bool ModbusSerial::config(HardwareSerial* port,
-  HardwareSerial* DebugSerialPort, long baud, u_int format, int txPin) {
+  HardwareSerial* DebugSerialPort, long baud, int txPin) {
     this->_port = port;
     this->_txPin = txPin;
-    (*port).begin(baud, format);
+    (*port).begin(baud);
 
     DebugPort = DebugSerialPort;
 
@@ -107,10 +107,10 @@ bool ModbusSerial::config(HardwareSerial* port,
   #endif
 
   #ifdef __AVR_ATmega32U4__
-  bool ModbusSerial::config(Serial_* port, long baud, u_int format, int txPin) {
+  bool ModbusSerial::config(Serial_* port, long baud, int txPin) {
     this->_port = port;
     this->_txPin = txPin;
-    (*port).begin(baud, format);
+    (*port).begin(baud);
     while (!(*port));
 
     if (txPin >= 0) {

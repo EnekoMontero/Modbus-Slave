@@ -88,6 +88,8 @@ bool ModbusSerial::config(HardwareSerial* port,
     this->_txPin = txPin;
     (*port).begin(baud);
 
+    delay(2000);
+
     if (txPin >= 0) {
       pinMode(txPin, OUTPUT);
       digitalWrite(txPin, LOW);
@@ -105,10 +107,10 @@ bool ModbusSerial::config(HardwareSerial* port,
   #endif
 
   #ifdef __AVR_ATmega32U4__
-  bool ModbusSerial::config(Serial_* port, long baud, u_int format, int txPin) {
+  bool ModbusSerial::config(Serial_* port, long baud, int txPin) {
     this->_port = port;
     this->_txPin = txPin;
-    (*port).begin(baud, format);
+    (*port).begin(baud);
     while (!(*port));
 
     if (txPin >= 0) {
@@ -242,8 +244,6 @@ bool ModbusSerial::config(HardwareSerial* port,
     (*DebugPort).println(F("-----------------"));
     #endif
 
-    delay(50);
-
     if (this->receive(_frame)) {
       if (_reply == MB_REPLY_NORMAL)
       this->sendPDU(_frame);
@@ -251,8 +251,6 @@ bool ModbusSerial::config(HardwareSerial* port,
       if (_reply == MB_REPLY_ECHO)
       this->send(_frame);
     }
-
-    delay(50);
 
     free(_frame);
     _len = 0;
