@@ -6,3 +6,5 @@ libraries/.DS_Store
 libraries/Energia MSP/.DS_Store
 
 libraries/Energia MSP/ModbusLoRa_RFM95/.DS_Store
+
+libraries/Energia MSP/ModbusLoRa_RFM95/examples/.DS_Store

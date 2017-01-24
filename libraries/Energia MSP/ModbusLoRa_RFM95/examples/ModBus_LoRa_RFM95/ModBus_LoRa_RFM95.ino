@@ -10,7 +10,7 @@
 
 #define CLIENT_ADDRESS 10
 
-#define RF95_FREQ 868.5
+#define RF95_FREQ 869.0
 
 #define TEMPERATURE_LSB  0x55
 #define TEMPERATURE_MSB  0x56
@@ -69,18 +69,26 @@ void setup() {
   // The default transmitter power is 13dBm, using PA_BOOST.
   // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then
   // you can set transmitter powers from 5 to 23 dBm:
-  //  driver.setTxPower(23, false);
-  driver.setTxPower(15, false);
+  // For higher power levels the launchpad may require an external regulator to power the radio.
+  // The MSP launchpad 3.3v regulator cannot supply enought current for the radio and can cause a system reset
+  driver.setTxPower(23, false);
+
+  // Configure the radio for long range
+  // < Bw = 125 kHz, Cr = 4/5, Sf = 4096chips/symbol, CRC on. Slower + longer range
+  //  RH_RF95::ModemConfig RFM95config = { 0x72,   0xc4,    0x00}; // Bw125Cr45Sf4096
+  // < Bw = 125 kHz, Cr = 4/5, Sf = 512chips/symbol, CRC on. Slow + long range
+  RH_RF95::ModemConfig RFM95config = { 0x72,   0x94,    0x00};  // Bw125Cr45Sf512
+  driver.setModemRegisters(&RFM95config);
 
   // You can optionally require this module to wait until Channel Activity
   // Detection shows no activity on the channel before transmitting by setting
   // the CAD timeout to non-zero:
   //  driver.setCADTimeout(10000);
 
-  // You can optionally set the frequency of the RFM95
-  //  if (!driver.setFrequency(RF95_FREQ)) {
-  //    Serial.println("setFrequency failed");
-  //  }
+  // Set the frequency of the RFM95
+  if (!driver.setFrequency(RF95_FREQ)) {
+    Serial.println("setFrequency failed");
+  }
 
   digitalWrite(ledPin, LOW);
 }

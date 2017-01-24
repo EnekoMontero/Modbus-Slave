@@ -81,7 +81,8 @@ void ModbusLoRa::task() {
       #ifdef DEBUG_MODE
       (*DebugPort).println();
       (*DebugPort).println(F("-----------------------------------------------"));
-      (*DebugPort).print(F("Msg received from address: "));
+      (*DebugPort).println();
+      (*DebugPort).print(F("MSG RECEIVED from address: "));
       (*DebugPort).println(from);
       // (*DebugPort).print("Len: ");
       // (*DebugPort).println(rf95_len);
@@ -107,7 +108,7 @@ void ModbusLoRa::task() {
     }
     #ifdef DEBUG_MODE
     else {
-      (*DebugPort).println(F("recv failed"));
+      (*DebugPort).println(F("FAILED to receive MSG"));
     }
     #endif
 
@@ -160,7 +161,7 @@ bool ModbusLoRa::receive(byte* frame) {
 bool ModbusLoRa::send(byte* frame, uint8_t from) {
 
   #ifdef DEBUG_MODE
-  (*DebugPort).print(F("Sent reply to address: "));
+  (*DebugPort).print(F("SENDING REPPLY to address: "));
   (*DebugPort).println(from);
   (*DebugPort).println(F("REPLY DEC"));
   for (int i = 0 ; i < _len ; i++) {
@@ -176,9 +177,12 @@ bool ModbusLoRa::send(byte* frame, uint8_t from) {
     (*DebugPort).print(frame[i], HEX);
     (*DebugPort).print(':');
   }
-  #endif
 
+  if(!_manager.sendtoWait(frame, _len, from))
+    (*DebugPort).println(F("FAILED to receive ACK"));
+  #else
   _manager.sendtoWait(frame, _len, from);
+  #endif
 }
 
 bool ModbusLoRa::sendPDU(byte* pduframe, uint8_t from) {
@@ -200,7 +204,7 @@ bool ModbusLoRa::sendPDU(byte* pduframe, uint8_t from) {
   _len += 3; // increment _len to fit _slaveId and CRC bytes
 
   #ifdef DEBUG_MODE
-  (*DebugPort).print(F("Sending reply to address: "));
+  (*DebugPort).print(F("SENDING REPPLY to address: "));
   (*DebugPort).println(from);
   // (*DebugPort).println("REPLY DEC");
   // (*DebugPort).print(_slaveId);
@@ -244,17 +248,21 @@ bool ModbusLoRa::sendPDU(byte* pduframe, uint8_t from) {
     (*DebugPort).print(':');
   }
   (*DebugPort).println();
-  #endif
 
+  if(!_manager.sendtoWait(frame, _len, from)) {
+    (*DebugPort).println(F("FAILED to receive ACK"));
+  }
+  #else
   _manager.sendtoWait(frame, _len, from);
+  #endif
 }
 
 word ModbusLoRa::calcCrc(byte address, byte * frameIn, byte bufferSize)
 {
-	unsigned char * framePtr = frameIn;
+  unsigned char * framePtr = frameIn;
 
-	unsigned int temp, temp2, flag;
-	temp = 0xFFFF;
+  unsigned int temp, temp2, flag;
+  temp = 0xFFFF;
 
   temp = temp ^ address;
   for (unsigned char j = 1; j <= 8; j++)
@@ -265,22 +273,22 @@ word ModbusLoRa::calcCrc(byte address, byte * frameIn, byte bufferSize)
     temp ^= 0xA001;
   }
 
-	for (unsigned char i = 0; i < bufferSize; i++)
-	{
-		temp = temp ^ framePtr[i];
-		for (unsigned char j = 1; j <= 8; j++)
-		{
-			flag = temp & 0x0001;
-			temp >>= 1;
-			if (flag)
-			temp ^= 0xA001;
-		}
-	}
-	// Reverse byte order.
-	temp2 = temp >> 8;
-	temp = (temp << 8) | temp2;
-	temp &= 0xFFFF;
-	// the returned value is already swapped
-	// crcLo byte is first & crcHi byte is last
-	return (word) temp;
+  for (unsigned char i = 0; i < bufferSize; i++)
+  {
+    temp = temp ^ framePtr[i];
+    for (unsigned char j = 1; j <= 8; j++)
+    {
+      flag = temp & 0x0001;
+      temp >>= 1;
+      if (flag)
+      temp ^= 0xA001;
+    }
+  }
+  // Reverse byte order.
+  temp2 = temp >> 8;
+  temp = (temp << 8) | temp2;
+  temp &= 0xFFFF;
+  // the returned value is already swapped
+  // crcLo byte is first & crcHi byte is last
+  return (word) temp;
 }
